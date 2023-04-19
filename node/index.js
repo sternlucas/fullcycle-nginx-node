@@ -8,15 +8,28 @@ const config = {
     database: 'nodedb'
 };
 const mysql = require('mysql')
-// const connection = mysql.createConnection(config)
+const connection = mysql.createConnection(config)
 
-const sql = `INSERT INTO people(name) values('Wesley')`
-// connection.query(sql)
-// connection.end()
+connection.query("CREATE TABLE IF NOT EXISTS people (name VARCHAR(255))");
+
+const sql = `INSERT INTO people(name) values('Jose')`
+connection.query(sql)
+connection.end()
 
 
 app.get('/', (req, res) => {
-    res.send('<h1>Full Cycle Rocks!</h1>')
+    const newConnection = mysql.createConnection(config)
+    newConnection.query("SELECT * FROM people", function (err, result, fields) {
+        let response = '<h1>Full Cycle Rocks !</h1>'
+        let names = []
+        Object.keys(result).forEach(function (key) {
+            var row = result[key];
+            names.push(row.name)
+        });
+
+        console.log(names)
+        res.send(response.concat(names))
+    })
 })
 
 app.listen(port, () => {
